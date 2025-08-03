@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const argon2 = require('argon2');
 
 const userSchema = new Schema({
   name: {
@@ -40,6 +41,17 @@ const userSchema = new Schema({
 },{
     timestamps:true
 });
+
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    try {
+      this.password = await argon2.hash(this.password);
+    } catch (error) {
+      return next(error);
+    }
+  }
+});
+
 
 userSchema.index({name : 'text'})
 
