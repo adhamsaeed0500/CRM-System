@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const validateRegisteration = (data) => {
+const validateRegistration = (data) => {
     const schema = Joi.object({
         name:Joi.string().min(2).max(60).required(),
         email:Joi.email().required(),
@@ -10,3 +10,5 @@ const validateRegisteration = (data) => {
 
     return schema.validate(data);
 };
+
+module.exports = { validateRegistration };
