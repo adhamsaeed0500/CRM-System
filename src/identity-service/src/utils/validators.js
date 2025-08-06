@@ -21,4 +21,12 @@ const validateRegistrationByAdmin = (data) => {
     return schema.validate(data);
 };
 
-module.exports = { validateRegistration , validateRegistrationByAdmin };
+const validatelogin = (data) => {
+    const schema = Joi.object({
+        email:Joi.email().required(),
+        password:Joi.string().min(5).required(),
+    });
+
+    return schema.validate(data);
+};
+module.exports = { validateRegistration , validateRegistrationByAdmin, validatelogin};
