@@ -1,6 +1,7 @@
 const logger = require('../utils/logger');
 const { validateRegistration, validateRegistrationByAdmin , validatelogin } = require('../utils/validators');
 const User = require("../models/User");
+const RefreshToken = require('../models/refreshToken.model');
 const generateTokens = require("../utils/generateToken");
 
 const registerUser = async(req, res) => {
@@ -182,4 +183,60 @@ const logoutUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, createUserByAdmin, loginUser, logoutUser }
+const refreshTokenUser = async (req, res) => {
+    logger.info('start refreshToken endpoint');
+     try {
+        const { refreshToken } = req.body;
+        if(!refreshToken){
+            logger.warn('missing refresh token');
+            res.status(400).json({
+                success:false,
+                message:'missing refresh token'
+            })
+        }
+
+        const storedToken = await RefreshToken.find({token});
+        if(!storedToken){
+            logger.warn('can not find refresh token');
+            res.status(400).json({
+                success:false,
+                message:'can not refresh token'
+            })
+        }
+
+        if(storedToken.expiresAt < new Date()){
+            logger.warn("Invalid or expired refresh token");
+            return res.status(401).json({
+                success: false,
+                message: `Invalid or expired refresh token`,
+            });
+        };
+        const user = await User.findById(storedToken.user);
+        if (!user) {
+            logger.warn("User not found");
+            return res.status(401).json({
+                success: false,
+                message: `User not found`,
+            });
+        };
+        
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+            await generateTokens(user);
+            
+        await RefreshToken.deleteOne({ _id: storedToken._id });
+
+        res.json({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        });
+
+     } catch (e) {
+        logger.warn('refreshToken error occured', e.message);
+        res.status(500).json({
+            success:false,
+            message:'internal server error'
+        })
+     }
+};
+
+module.exports = { registerUser, createUserByAdmin, loginUser, logoutUser,refreshTokenUser }
