@@ -239,4 +239,39 @@ const refreshTokenUser = async (req, res) => {
      }
 };
 
-module.exports = { registerUser, createUserByAdmin, loginUser, logoutUser,refreshTokenUser }
+const googleCallback = async (req, res) => {
+    logger.info('googleCallback endpoint started');
+
+    try {
+        const user = req.user;
+        if(!user){
+            logger.warn(' googleCallback - user not found in request');
+            return res.status(400).json({
+                success: false,
+                message: 'user not found'
+            });
+        }
+
+        const payload = {
+            id: user.id,
+            name: user.displayName,
+            role: user.role
+        };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+
+       logger.info('googleCallback - token generated for user', user.id);
+       return res.status(200).json({ success: true, token });
+
+    } catch (error) {
+        logger.error('googleCallback - error', error.message)
+        return res.status(500).json({
+            success: false,
+            message: 'internal server error'
+        });
+    }
+};
+
+module.exports = { registerUser, createUserByAdmin, loginUser, logoutUser, refreshTokenUser, googleCallback }
