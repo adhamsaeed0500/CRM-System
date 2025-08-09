@@ -41,7 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/user', identityRoutes);
+app.use('/v1/user', identityRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
