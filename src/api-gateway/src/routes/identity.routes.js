@@ -2,6 +2,7 @@ const express = require('express');
 const proxy = require('express-http-proxy');
 const config = require('../config/config.json');
 const proxyOptions  = require('../utils/proxyOptions'); 
+const logger = require('winston');
 
 const Roueter = express.Router();
 
