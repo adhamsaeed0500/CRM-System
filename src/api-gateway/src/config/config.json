@@ -1,0 +1,5 @@
+{
+    "services":{
+        "identity":"http://localhost:3001"
+    }
+}
