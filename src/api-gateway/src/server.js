@@ -6,6 +6,7 @@ const { rateLimit } = require("express-rate-limit");
 const { RedisStore } = require("rate-limit-redis");
 const logger = require("./utils/logger");
 const errorHandler = require("./middleware/errorhandler");
+const {identityRoutes} = require("./routes/identity.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/user', identityRoutes);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
