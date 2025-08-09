@@ -73,7 +73,7 @@ app.use("/register", sensitiveEndpointsLimiter);
 
 app.use(passport.initialize());
 //Routes
-app.use("/", routes);
+app.use("/user", routes);
 
 //error handler
 app.use(errorHandler);
